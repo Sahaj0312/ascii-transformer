@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       AsciiConverter.Const
+      AsciiConverter.ExtractFrames
       AsciiConverter.Lib
   other-modules:
       Paths_ascii_transformer
@@ -33,10 +34,14 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      JuicyPixels
+    , base >=4.7 && <5
+    , bytestring
     , directory
     , filepath
     , hip
+    , process
+    , unix
     , vector
   default-language: Haskell2010
 
@@ -48,11 +53,15 @@ executable ascii-transformer-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      ascii-transformer
+      JuicyPixels
+    , ascii-transformer
     , base >=4.7 && <5
+    , bytestring
     , directory
     , filepath
     , hip
+    , process
+    , unix
     , vector
   default-language: Haskell2010
 
@@ -65,10 +74,14 @@ test-suite ascii-transformer-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      ascii-transformer
+      JuicyPixels
+    , ascii-transformer
     , base >=4.7 && <5
+    , bytestring
     , directory
     , filepath
     , hip
+    , process
+    , unix
     , vector
   default-language: Haskell2010

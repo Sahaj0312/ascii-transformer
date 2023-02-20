@@ -23,6 +23,10 @@ dependencies:
 - base >= 4.7 && < 5
 - hip
 - vector
+- JuicyPixels
+- bytestring
+- process
+- unix
 - filepath 
 - directory
 

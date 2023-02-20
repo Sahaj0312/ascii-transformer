@@ -13,7 +13,7 @@ hasFFmpeg = do
 extractFrames :: FilePath -> IO ()
 extractFrames file = do
   let cmd = "ffmpeg -i " ++ file ++ " -vf fps=10 " ++ file ++ "-frame-%04d.jpg"
-  (code, out, err) <- readProcessWithExitCode "sh" ["-c", cmd] ""
+  (_, out, err) <- readProcessWithExitCode "sh" ["-c", cmd] ""
   putStrLn out
   putStrLn err
 

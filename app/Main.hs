@@ -1,5 +1,3 @@
-module Main (main) where
-
 import AsciiConverter.Lib (Config (Config, imageColor, imageWidth), convertToAscii, resizeImage)
 import AsciiConverter.ExtractFrames (extractFrames, hasFFmpeg)
 import Control.Monad.IO.Class
@@ -31,18 +29,17 @@ main = do
               checkForImages
             else do
               putStrLn $ "Found " ++ show (length imageFiles) ++ " image file(s). Converting to ASCII art..."
-              mapM_
-                (\file -> do
-                  putStrLn $ "Loading image file: " ++ file
-                  image <- readImage file
-                  case image of
-                    Left _ -> putStrLn "Couldn't read the image"
-                    Right img -> do
-                      let resizedImg = resizeImage (imageWidth config) img
-                      converted <- liftIO $ convertToAscii resizedImg config
-                      putStrLn converted
-                )
-                imageFiles
+              asciiArts <- mapM (\file -> do
+                image <- readImage file
+                case image of
+                  Left _ -> do
+                    putStrLn "Couldn't read the image"
+                    return ""
+                  Right img -> do
+                    let resizedImg = resizeImage (imageWidth config) img
+                    liftIO $ convertToAscii resizedImg config
+                ) imageFiles
+              putStr (concat asciiArts)
 
     files <- listDirectory currentDir
     let videoFiles = filter (\file -> takeExtension file == ".mp4") files

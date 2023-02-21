@@ -12,6 +12,7 @@ import Graphics.Image as I
 import Graphics.Image.Interface (Array (toVector))
 import Prelude
 
+
 data Config = Config
   { imageWidth :: Int,
     imageColor :: Bool
@@ -30,7 +31,22 @@ replacePixel (PixelRGB r g b) = character
     green = g * 255 :: Double
     blue = b * 255 :: Double
     i = floor $ (0.2126 * red + 0.7152 * green + 0.0722 * blue) * brightnessWeight :: Int
-    character = [asciiCharactersMap !! i]
+    c = rgbToAnsi(r,g,b)
+    character = c ++ [asciiCharactersMap !! i]
+
+
+
+rgbToAnsi :: (Double, Double, Double) -> String
+rgbToAnsi (r, g, b)
+    | r == 0 && g == 0 && b == 0 = "\x1b[30m"
+    | r == 255 && g == 255 && b == 255 = "\x1b[37m"
+    | r > g && r > b && (r - g) > 30 = "\x1b[31m"
+    | g > r && g > b && (g - r) > 30 = "\x1b[32m"
+    | b > r && b > g && (b - g) > 30 = "\x1b[34m"
+    | r > g && g > b = "\x1b[33m"
+    | g > r && r > b = "\x1b[36m"
+    | r > b && b > g = "\x1b[35m"
+    | otherwise = "\x1b[30m"
 
 convertToAscii :: Image VS RGB Double -> Config -> IO String
 convertToAscii img config = do

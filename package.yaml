@@ -29,6 +29,7 @@ dependencies:
 - unix
 - filepath 
 - directory
+- ansi-terminal
 
 ghc-options:
 - -Wall

@@ -18,8 +18,10 @@ import System.Console.Terminal.Size
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering, LineBuffering))
 import System.Directory
 import System.FilePath
+import Control.Concurrent (threadDelay)
 import Data.Char (isDigit)
 import Text.Read (readMaybe)
+
 
 data Config = Config
   { imageWidth :: Int,
@@ -63,6 +65,7 @@ convertToAscii img config = do
   let converted = Data.List.map replacePixel pixelsList
   let withLineBreaks = insertAtN (imageWidth config) "\n" converted
   putStrLn $ concat withLineBreaks
+  threadDelay 90000 -- TODO: find optimal value that works for most videos
 
 insertAtN :: Int -> a -> [a] -> [a]
 insertAtN 0 _ xs = xs

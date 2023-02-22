@@ -3,7 +3,8 @@ module AsciiConverter.Lib
     resizeImage,
     convertToAscii,
     resizeTerminal,
-    deleteImages
+    deleteImages,
+    extractImageIndex
   )
 where
 
@@ -17,6 +18,8 @@ import System.Console.Terminal.Size
 import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering, LineBuffering))
 import System.Directory
 import System.FilePath
+import Data.Char (isDigit)
+import Text.Read (readMaybe)
 
 data Config = Config
   { imageWidth :: Int,
@@ -53,13 +56,13 @@ rgbToAnsi (r, g, b)
     | r > b && b > g = "\x1b[35m"
     | otherwise = "\x1b[30m"
 
-convertToAscii :: Image VS RGB Double -> Config -> IO String
+convertToAscii :: Image VS RGB Double -> Config -> IO ()
 convertToAscii img config = do
   let pixelsVector = toVector img
   let pixelsList = toList pixelsVector :: [Pixel RGB Double]
   let converted = Data.List.map replacePixel pixelsList
   let withLineBreaks = insertAtN (imageWidth config) "\n" converted
-  return $ concat withLineBreaks
+  putStrLn $ concat withLineBreaks
 
 insertAtN :: Int -> a -> [a] -> [a]
 insertAtN 0 _ xs = xs
@@ -81,3 +84,10 @@ deleteImages dir = do
   files <- listDirectory dir
   let images = filter (\f -> takeExtension f == ".jpg") files
   mapM_ (\f -> removeFile (dir </> f)) images
+
+extractImageIndex :: FilePath -> Int
+extractImageIndex path =
+  case readMaybe indexStr of
+    Just index -> index
+    Nothing -> error $ "Invalid image index: " ++ indexStr
+  where indexStr = takeWhile isDigit $ reverse $ takeWhile (/= '-') $ reverse path

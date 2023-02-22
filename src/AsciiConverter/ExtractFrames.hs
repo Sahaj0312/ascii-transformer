@@ -12,7 +12,7 @@ hasFFmpeg = do
 -- Extracts frames from a video file using ffmpeg
 extractFrames :: FilePath -> IO ()
 extractFrames file = do
-  let cmd = "ffmpeg -i " ++ file ++ " -vf fps=100 " ++ file ++ "-frame-%04d.jpg"
+  let cmd = "ffmpeg -i " ++ file ++ " -vf fps=30 " ++ file ++ "-frame-%04d.jpg"
   (_, out, err) <- readProcessWithExitCode "sh" ["-c", cmd] ""
   putStrLn out
   putStrLn err

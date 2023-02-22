@@ -2,6 +2,8 @@ module AsciiConverter.Lib
   ( Config (..),
     resizeImage,
     convertToAscii,
+    resizeTerminal,
+    deleteImages
   )
 where
 
@@ -11,7 +13,10 @@ import Data.Vector.Storable (toList)
 import Graphics.Image as I
 import Graphics.Image.Interface (Array (toVector))
 import Prelude
-
+import System.Console.Terminal.Size
+import System.IO (stdout, hSetBuffering, BufferMode(NoBuffering, LineBuffering))
+import System.Directory
+import System.FilePath
 
 data Config = Config
   { imageWidth :: Int,
@@ -19,10 +24,10 @@ data Config = Config
   }
 
 resizeImage :: Array arr cs e => Int -> Image arr cs e -> Image arr cs e
-resizeImage width img = scale Bilinear Edge (scaleFactor, scaleFactor) img
+resizeImage scaleWidth img = scale Bilinear Edge (scaleFactor, scaleFactor) img
   where
     currentWidth = I.cols img
-    scaleFactor = fromIntegral width / fromIntegral currentWidth :: Double
+    scaleFactor = fromIntegral scaleWidth / fromIntegral currentWidth :: Double
 
 replacePixel :: Pixel RGB Double -> String
 replacePixel (PixelRGB r g b) = character
@@ -62,3 +67,17 @@ insertAtN _ _ [] = []
 insertAtN n y xs
   | length xs < n = xs
   | otherwise = take n xs ++ [y] ++ insertAtN n y (drop n xs)
+
+resizeTerminal :: Int -> IO ()
+resizeTerminal terminalWidth = do
+  Just (Window h _) <- size
+  let i = fromIntegral h :: Int
+  hSetBuffering stdout NoBuffering
+  putStr $ "\ESC[8;" ++ show i ++ ";" ++ show terminalWidth ++ "t"
+  hSetBuffering stdout LineBuffering
+
+deleteImages :: FilePath -> IO ()
+deleteImages dir = do
+  files <- listDirectory dir
+  let images = filter (\f -> takeExtension f == ".jpg") files
+  mapM_ (\f -> removeFile (dir </> f)) images

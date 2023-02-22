@@ -1,7 +1,7 @@
-import AsciiConverter.Lib (Config (Config, imageColor, imageWidth), convertToAscii, resizeImage)
+import AsciiConverter.Lib (Config (Config, imageColor, imageWidth), convertToAscii, resizeImage, resizeTerminal, deleteImages)
 import AsciiConverter.ExtractFrames (extractFrames, hasFFmpeg)
 import Control.Monad.IO.Class
-import Graphics.Image (readImage)
+import Graphics.Image (readImage, rows, cols)
 import System.Directory
 import System.FilePath
 import Prelude as P
@@ -15,8 +15,6 @@ main = do
     putStrLn "Please install FFmpeg to use this program"
     exitFailure
   else do
-    let config = Config {imageWidth = 100, imageColor = False}
-    -- image <- readImage "tigerLow.jpg"
     currentDir <- getCurrentDirectory
     let imageExtensions = [".jpg", ".jpeg", ".png"]
     let checkForImages = do
@@ -36,7 +34,10 @@ main = do
                     putStrLn "Couldn't read the image"
                     return ""
                   Right img -> do
+                    let maxImageWidth = if rows img > 60 then (60 * cols img) `div` rows img else 100
+                    let config = Config {imageWidth = maxImageWidth, imageColor = False}
                     let resizedImg = resizeImage (imageWidth config) img
+                    resizeTerminal (imageWidth config)
                     liftIO $ convertToAscii resizedImg config
                 ) imageFiles
               putStr (concat asciiArts)
@@ -48,4 +49,5 @@ main = do
         putStrLn ("Extracting frames from: " ++ videoFile)
         extractFrames videoFile
         checkForImages
+        deleteImages currentDir
       _ -> checkForImages

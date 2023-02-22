@@ -30,6 +30,7 @@ dependencies:
 - filepath 
 - directory
 - ansi-terminal
+- terminal-size
 
 ghc-options:
 - -Wall

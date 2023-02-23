@@ -44,6 +44,8 @@ replacePixel (PixelRGB r g b) = character
     c = rgbToAnsi(r,g,b)
     character = c ++ [asciiCharactersMap !! i]
 
+calcBrightness :: Pixel RGB Double -> Double
+calcBrightness (PixelRGB r g b) = (r * g * b) / 3
 
 
 rgbToAnsi :: (Double, Double, Double) -> String
@@ -63,6 +65,9 @@ convertToAscii img config = do
   let pixelsVector = toVector img
   let pixelsList = toList pixelsVector :: [Pixel RGB Double]
   let converted = Data.List.map replacePixel pixelsList
+  let brightness = Data.List.map calcBrightness pixelsList
+  putStrLn "The brightness of this frame is:"
+  putStrLn $ show (Prelude.sum(brightness)/fromIntegral(length brightness))
   let withLineBreaks = insertAtN (imageWidth config) "\n" converted
   putStrLn $ concat withLineBreaks
   threadDelay 90000 -- TODO: find optimal value that works for most videos

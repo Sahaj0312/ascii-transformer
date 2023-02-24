@@ -2,11 +2,15 @@ module AsciiConverter.Const
   ( asciiCharactersMap,
     maxBrightness,
     brightnessWeight,
+    asciiCharactersMapRev,
   )
 where
 
 asciiCharactersMap :: String
 asciiCharactersMap = " .°*oO#@)"
+
+asciiCharactersMapRev :: String
+asciiCharactersMapRev = ")@#Oo*°. "
 
 maxBrightness :: Int
 maxBrightness = 255

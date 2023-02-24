@@ -8,7 +8,7 @@ module AsciiConverter.Lib
   )
 where
 
-import AsciiConverter.Const (asciiCharactersMap, brightnessWeight)
+import AsciiConverter.Const (asciiCharactersMap, brightnessWeight, asciiCharactersMapRev)
 import Data.List (map)
 import Data.Vector.Storable (toList)
 import Graphics.Image as I
@@ -34,15 +34,18 @@ resizeImage scaleWidth img = scale Bilinear Edge (scaleFactor, scaleFactor) img
     currentWidth = I.cols img
     scaleFactor = fromIntegral scaleWidth / fromIntegral currentWidth :: Double
 
-replacePixel :: Pixel RGB Double -> String
-replacePixel (PixelRGB r g b) = character
+replacePixel :: Pixel RGB Double -> Double -> String
+replacePixel (PixelRGB r g b) brightness = character
   where
+    list = if brightness > 102.00
+             then asciiCharactersMap
+             else asciiCharactersMapRev
     red = r * 255 :: Double
     green = g * 255 :: Double
     blue = b * 255 :: Double
     i = floor $ (0.2126 * red + 0.7152 * green + 0.0722 * blue) * brightnessWeight :: Int
     c = rgbToAnsi(r,g,b)
-    character = c ++ [asciiCharactersMap !! i]
+    character = c ++ [list !! i]
 
 calcBrightness :: Pixel RGB Double -> Double
 calcBrightness (PixelRGB r g b) = (r * g * b) / 3
@@ -64,10 +67,10 @@ convertToAscii :: Image VS RGB Double -> Config -> IO ()
 convertToAscii img config = do
   let pixelsVector = toVector img
   let pixelsList = toList pixelsVector :: [Pixel RGB Double]
-  let converted = Data.List.map replacePixel pixelsList
   let brightness = Data.List.map calcBrightness pixelsList
-  putStrLn "The brightness of this frame is:"
-  putStrLn $ show (Prelude.sum(brightness)/fromIntegral(length brightness))
+  --putStrLn "The brightness of this frame is:"
+  --putStrLn $ show (Prelude.sum(brightness)/fromIntegral(length brightness))
+  let converted = Data.List.map (\x -> replacePixel x (Prelude.sum(brightness)/fromIntegral(length brightness))) pixelsList 
   let withLineBreaks = insertAtN (imageWidth config) "\n" converted
   putStrLn $ concat withLineBreaks
   threadDelay 90000 -- TODO: find optimal value that works for most videos

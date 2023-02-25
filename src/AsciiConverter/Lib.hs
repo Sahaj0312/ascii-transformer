@@ -53,15 +53,15 @@ calcBrightness (PixelRGB r g b) = (r * g * b) / 3
 
 rgbToAnsi :: (Double, Double, Double) -> String
 rgbToAnsi (r, g, b)
-    | r == 0 && g == 0 && b == 0 = "\x1b[30m"
-    | r == 255 && g == 255 && b == 255 = "\x1b[37m"
-    | r > g && r > b && (r - g) > 30 = "\x1b[31m"
-    | g > r && g > b && (g - r) > 30 = "\x1b[32m"
-    | b > r && b > g && (b - g) > 30 = "\x1b[34m"
-    | r > g && g > b = "\x1b[33m"
-    | g > r && r > b = "\x1b[36m"
-    | r > b && b > g = "\x1b[35m"
-    | otherwise = "\x1b[30m"
+    | r == 0 && g == 0 && b == 0 = "\ESC[90m"
+    | r == 255 && g == 255 && b == 255 = "\x1b[97m"
+    | r > g && r > b && (r - g) > 30 = "\x1b[91m"
+    | g > r && g > b && (g - r) > 30 = "\x1b[92m"
+    | b > r && b > g && (b - g) > 30 = "\x1b[94m"
+    | r > g && g > b = "\x1b[93m"
+    | g > r && r > b = "\x1b[96m"
+    | r > b && b > g = "\x1b[95m"
+    | otherwise = "\ESC[90m"
 
 convertToAscii :: Image VS RGB Double -> Config -> IO ()
 convertToAscii img config = do

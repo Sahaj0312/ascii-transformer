@@ -73,7 +73,7 @@ convertToAscii img config = do
   let converted = Data.List.map (\x -> replacePixel x (Prelude.sum(brightness)/fromIntegral(length brightness))) pixelsList 
   let withLineBreaks = insertAtN (imageWidth config) "\n" converted
   putStrLn $ concat withLineBreaks
-  threadDelay 90000 -- TODO: find optimal value that works for most videos
+  threadDelay 16666 -- best frame delay for 30fps
 
 insertAtN :: Int -> a -> [a] -> [a]
 insertAtN 0 _ xs = xs

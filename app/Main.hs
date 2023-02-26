@@ -9,6 +9,7 @@ import System.Exit (exitFailure)
 import Control.Concurrent (threadDelay)
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import System.Environment (getArgs)
 
 main :: IO ()
 main = do
@@ -43,12 +44,11 @@ main = do
                     liftIO $ convertToAscii resizedImg config
                 ) sortedImageFiles
 
-    files <- listDirectory currentDir
-    let videoFiles = filter (\file -> takeExtension file == ".mp4") files
-    case videoFiles of
-      [videoFile] -> do
-        putStrLn ("Extracting frames from: " ++ videoFile)
-        extractFrames videoFile
+    args <- getArgs
+    case args of
+      [filePath] -> do
+        putStrLn ("Extracting frames")
+        extractFrames filePath
         checkForImages
         deleteImages currentDir
-      _ -> checkForImages
+      _ -> putStrLn "Usage: stack exec ascii-transformer-exe <input-file>"

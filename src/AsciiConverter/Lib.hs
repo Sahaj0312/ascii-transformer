@@ -4,7 +4,8 @@ module AsciiConverter.Lib
     convertToAscii,
     resizeTerminal,
     deleteImages,
-    extractImageIndex
+    extractImageIndex,
+    getMaxTerminalHeight
   )
 where
 
@@ -102,3 +103,13 @@ extractImageIndex path =
     Just index -> index
     Nothing -> error $ "Invalid image index: " ++ indexStr
   where indexStr = takeWhile isDigit $ reverse $ takeWhile (/= '-') $ reverse path
+
+getMaxTerminalHeight :: IO Int
+getMaxTerminalHeight = do
+  size <- size
+  let terminalHeight = case size of
+        Just (Window h _) -> h
+        _ -> 40
+  return $ if terminalHeight > 2
+           then terminalHeight - 2
+           else 40

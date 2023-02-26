@@ -1,4 +1,4 @@
-import AsciiConverter.Lib (Config (Config, imageColor, imageWidth), convertToAscii, resizeImage, resizeTerminal, deleteImages, extractImageIndex)
+import AsciiConverter.Lib (Config (Config, imageColor, imageWidth), convertToAscii, resizeImage, resizeTerminal, deleteImages, extractImageIndex, getMaxTerminalHeight)
 import AsciiConverter.ExtractFrames (extractFrames, hasFFmpeg)
 import Control.Monad.IO.Class
 import Graphics.Image (readImage, rows, cols)
@@ -37,8 +37,11 @@ main = do
                   Left _ -> do
                     putStrLn "Couldn't read the image"
                   Right img -> do
-                    let maxImageWidth = if rows img > 58 then (58 * cols img) `div` rows img else 100
-                    let config = Config {imageWidth = maxImageWidth, imageColor = False}
+                    maxImageWidth <- getMaxTerminalHeight
+                    let actualMaxWidth = if rows img > maxImageWidth
+                        then (maxImageWidth * cols img) `div` rows img
+                        else 100
+                    let config = Config {imageWidth = actualMaxWidth, imageColor = False}
                     let resizedImg = resizeImage (imageWidth config) img
                     resizeTerminal (imageWidth config)
                     liftIO $ convertToAscii resizedImg config

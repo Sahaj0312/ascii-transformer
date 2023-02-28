@@ -38,7 +38,7 @@ resizeImage scaleWidth img = scale Bilinear Edge (scaleFactor, scaleFactor) img
 replacePixel :: Pixel RGB Double -> Double -> String
 replacePixel (PixelRGB r g b) brightness = character
   where
-    list = if brightness > 102.00
+    list = if brightness > 102.00 -- 40 percent of 255 (max brightness)
              then asciiCharactersMap
              else asciiCharactersMapRev
     red = r * 255 :: Double
